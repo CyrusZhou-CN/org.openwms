@@ -17,6 +17,7 @@ package org.openwms.core.integration.persistence;
 
 import org.hibernate.HibernateException;
 import org.hibernate.boot.Metadata;
+import org.hibernate.boot.spi.BootstrapContext;
 import org.hibernate.engine.spi.SessionFactoryImplementor;
 import org.hibernate.envers.boot.internal.EnversService;
 import org.hibernate.envers.event.spi.EnversListenerDuplicationStrategy;
@@ -47,12 +48,12 @@ public class EnversIntegrator implements Integrator {
     /**
      * {@inheritDoc}
      */
-    @Deprecated
     @Override
     public void integrate(
             Metadata metadata,
-            SessionFactoryImplementor sessionFactory,
-            SessionFactoryServiceRegistry serviceRegistry) {
+            BootstrapContext bootstrapContext,
+            SessionFactoryImplementor sessionFactory) {
+        final SessionFactoryServiceRegistry serviceRegistry = (SessionFactoryServiceRegistry) sessionFactory.getServiceRegistry();
         final EnversService enversService = serviceRegistry.getService( EnversService.class );
 
         // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
