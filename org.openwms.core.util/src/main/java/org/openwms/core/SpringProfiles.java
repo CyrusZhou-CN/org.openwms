@@ -44,20 +44,6 @@ public final class SpringProfiles {
     public static final String NOT_MANAGED = "!MANAGED";
     /** Used to define that synchronous message handling is used. */
     public static final String IN_MEMORY = "INMEM";
-    /**
-     * Used to define that running within an OSGi container.
-     *
-     * @deprecated In the next mayor release
-     */
-    @Deprecated(forRemoval = true)
-    public static final String OSGI = "OSGI";
-    /**
-     * Used to define that not running in an OSGi container.
-     *
-     * @deprecated In the next mayor release
-     */
-    @Deprecated(forRemoval = true)
-    public static final String NON_OSGI = "noOSGI";
 
     private SpringProfiles() { }
 }

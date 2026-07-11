@@ -27,7 +27,6 @@ import org.openwms.core.exception.ExceptionCodes;
 import org.openwms.core.listener.RemovalNotAllowedException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -50,14 +49,7 @@ public abstract class AbstractWebController {
 
     private static final Logger EXC_LOGGER = LoggerFactory.getLogger(LoggingCategories.PRESENTATION_LAYER_EXCEPTION);
     private static final String P_PRESENTATION_LAYER_EXCEPTION = "[P] Presentation Layer Exception: {}";
-    @Autowired
     private MessageSource messageSource;
-
-    /**
-     * @deprecated Will become private. Migrate to use {@link #AbstractWebController(MessageSource)} instead.
-     */
-    @Deprecated(since = "3.0.0")
-    public AbstractWebController() { }
 
     protected AbstractWebController(MessageSource messageSource) {
         this.messageSource = messageSource;
