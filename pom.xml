@@ -50,7 +50,7 @@
 
         <profile>
             <id>generate_glossary</id>
-            <!-- Call this profile together with all to generate the DocBook Glossary file -->
+            <!-- Call this profile to generate the DocBook Glossary file -->
             <!-- Note: The used doclet plugin is available on the private Nexus repository only -->
             <build>
                 <plugins>
@@ -58,7 +58,6 @@
                         <artifactId>maven-javadoc-plugin</artifactId>
                         <version>${maven-javadoc-plugin.version}</version>
                         <configuration>
-                            <source>${project.build.sourceEncoding}</source>
                             <doclet>org.openwms.doclet.GlossaryGeneratorDoclet</doclet>
                             <docletArtifact>
                                 <groupId>org.openwms</groupId>
@@ -69,7 +68,6 @@
                             <encoding>${project.build.sourceEncoding}</encoding>
                             <docencoding>${project.build.sourceEncoding}</docencoding>
                             <breakiterator>true</breakiterator>
-                            <level>private</level>
                             <show>private</show>
                             <keywords>true</keywords>
                             <useStandardDocletOptions>false</useStandardDocletOptions>
@@ -89,30 +87,23 @@
         <ms.group>NULL</ms.group>
 
         <!--   Plugin versions   -->
-        <site-maven-plugin.version>0.12</site-maven-plugin.version>
+        <maven-scm-publish-plugin.version>3.3.0</maven-scm-publish-plugin.version>
     </properties>
 
     <build>
         <pluginManagement>
             <plugins>
                 <plugin>
-                    <groupId>com.github.github</groupId>
-                    <artifactId>site-maven-plugin</artifactId>
-                    <version>${site-maven-plugin.version}</version>
+                    <!-- Publish the Maven site to the gh-pages branch: ./mvnw site scm-publish:publish-scm -->
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-scm-publish-plugin</artifactId>
+                    <version>${maven-scm-publish-plugin.version}</version>
                     <configuration>
-                        <message>Creating site for ${project.version}</message>
-                        <outputDirectory>
-                            ${project.basedir}/${moduleDir}/docs
-                        </outputDirectory>
+                        <checkinComment>Creating site for ${project.version}</checkinComment>
+                        <pubScmUrl>scm:git:https://github.com/openwms/org.openwms.git</pubScmUrl>
+                        <scmBranch>gh-pages</scmBranch>
+                        <content>${project.reporting.outputDirectory}</content>
                     </configuration>
-                    <executions>
-                        <execution>
-                            <goals>
-                                <goal>site</goal>
-                            </goals>
-                            <phase>package</phase>
-                        </execution>
-                    </executions>
                 </plugin>
             </plugins>
         </pluginManagement>
@@ -120,8 +111,8 @@
 
     <repositories>
         <repository>
-            <id>central-staging</id>
-            <name>OSSRH Snapshot Repository</name>
+            <id>central-portal-snapshots</id>
+            <name>Sonatype Central Portal Snapshot Repository</name>
             <url>https://central.sonatype.com/repository/maven-snapshots/</url>
             <snapshots>
                 <enabled>true</enabled>
