@@ -6,6 +6,23 @@ warehouses.
 
 Find further documentation in the [Wiki](https://wiki.openwms.cloud/projects/openwms/wiki/00-dot-02-business-services)
 
+# This repository
+
+This is the root repository of the OpenWMS.org project. The business services are developed in their own repositories, listed in the
+table below. This repository contains the project-level documentation and one Maven module, the `org.openwms.core.util` library with
+utility classes, exception types and common event types that are shared by all other OpenWMS.org services.
+
+## Build
+
+Building requires JDK 25 and uses the Maven wrapper:
+
+```shell
+./mvnw clean verify -DsurefireArgs=-Dspring.profiles.active=ASYNCHRONOUS,TEST
+```
+
+The remote parent POM `org.openwms:org.openwms.parent` manages all plugin and dependency versions. Snapshot artifacts are deployed to
+the Sonatype Central snapshot repository on every push to `master`.
+
 # Architecture
 Instead of applying a technical layered architecture (like with previous technologies), the current architecture focuses on
 business components. Business functions with a high cohesion are kept together as small deployable software components. Each
@@ -31,7 +48,8 @@ clients are different in that the infrastructure takes care of DoS attacks, and 
 Read more about each components architecture and design on the components corresponding GitHub page.
 
 # Technologies
-In addition to a bunch of Spring Framework subprojects, OpenWMS.org supports popular BPMN workflow engines like [Activiti](https://www.activiti.org),
+The current technology baseline is Java 25 and Spring Boot 4.1. In addition to a bunch of Spring Framework subprojects, OpenWMS.org
+supports popular BPMN workflow engines like [Activiti](https://www.activiti.org),
 [Flowable](https://www.flowable.org) and [Camunda](https://www.camunda.org) to take routing decisions on the transport layer.
 RDBMS access is most often realised with the [Jakarta Persistence API](https://de.wikipedia.org/wiki/Jakarta_Persistence_API). Some
 components might also use NoSQL databases, like MongoDB. [RabbitMQ](https://rabbitmq.com) in combination with the Spring Integration project

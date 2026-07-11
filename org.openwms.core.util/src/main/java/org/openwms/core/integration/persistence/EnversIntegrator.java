@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * A EnversIntegrator.
+ * An EnversIntegrator is a Hibernate {@link Integrator} that replaces the default Hibernate Envers listener registration. It registers
+ * the standard Envers event listeners but uses the {@link CustomPostDeleteEventListener} to skip audit log entries on entity deletion.
  *
  * @author Heiko Scherrer
  */
@@ -43,6 +44,7 @@ public class EnversIntegrator implements Integrator {
 
     private static final Logger log = LoggerFactory.getLogger( EnversIntegrator.class );
 
+    /** Configuration property to enable or disable the automatic registration of the Envers event listeners: {@value}. */
     public static final String AUTO_REGISTER = "hibernate.envers.autoRegisterListeners";
 
     /**
@@ -83,38 +85,39 @@ public class EnversIntegrator implements Integrator {
         final EventListenerRegistry listenerRegistry = serviceRegistry.getService( EventListenerRegistry.class );
         listenerRegistry.addDuplicationStrategy( EnversListenerDuplicationStrategy.INSTANCE );
 
-        if ( enversService.getEntitiesConfigurations().hasAuditedEntities() ) {
-            listenerRegistry.appendListeners(
-                    EventType.POST_DELETE,
-                    new CustomPostDeleteEventListener( enversService )
-            );
-            listenerRegistry.appendListeners(
-                    EventType.POST_INSERT,
-                    new EnversPostInsertEventListenerImpl( enversService )
-            );
-            listenerRegistry.appendListeners(
-                    EventType.PRE_UPDATE,
-                    new EnversPreUpdateEventListenerImpl( enversService )
-            );
-            listenerRegistry.appendListeners(
-                    EventType.POST_UPDATE,
-                    new EnversPostUpdateEventListenerImpl( enversService )
-            );
-            listenerRegistry.appendListeners(
-                    EventType.POST_COLLECTION_RECREATE,
-                    new EnversPostCollectionRecreateEventListenerImpl( enversService )
-            );
-            listenerRegistry.appendListeners(
-                    EventType.PRE_COLLECTION_REMOVE,
-                    new EnversPreCollectionRemoveEventListenerImpl( enversService )
-            );
-            listenerRegistry.appendListeners(
-                    EventType.PRE_COLLECTION_UPDATE,
-                    new EnversPreCollectionUpdateEventListenerImpl( enversService )
-            );
-        }
+        listenerRegistry.appendListeners(
+                EventType.POST_DELETE,
+                new CustomPostDeleteEventListener( enversService )
+        );
+        listenerRegistry.appendListeners(
+                EventType.POST_INSERT,
+                new EnversPostInsertEventListenerImpl( enversService )
+        );
+        listenerRegistry.appendListeners(
+                EventType.PRE_UPDATE,
+                new EnversPreUpdateEventListenerImpl( enversService )
+        );
+        listenerRegistry.appendListeners(
+                EventType.POST_UPDATE,
+                new EnversPostUpdateEventListenerImpl( enversService )
+        );
+        listenerRegistry.appendListeners(
+                EventType.POST_COLLECTION_RECREATE,
+                new EnversPostCollectionRecreateEventListenerImpl( enversService )
+        );
+        listenerRegistry.appendListeners(
+                EventType.PRE_COLLECTION_REMOVE,
+                new EnversPreCollectionRemoveEventListenerImpl( enversService )
+        );
+        listenerRegistry.appendListeners(
+                EventType.PRE_COLLECTION_UPDATE,
+                new EnversPreCollectionUpdateEventListenerImpl( enversService )
+        );
     }
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void disintegrate(SessionFactoryImplementor sessionFactory, SessionFactoryServiceRegistry serviceRegistry) {
         // nothing to do

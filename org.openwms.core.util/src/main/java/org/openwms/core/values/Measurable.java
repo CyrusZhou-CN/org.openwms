@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,12 @@
 package org.openwms.core.values;
 
 /**
- * A Measurable.
+ * A Measurable is a quantity with a numeric magnitude and a unit type, that can be compared and converted into other units of the same
+ * unit family.
  *
+ * @param <V> Type of the numeric magnitude
+ * @param <E> The concrete Measurable type itself
+ * @param <T> Type of the unit
  * @author Heiko Scherrer
  */
 public interface Measurable<V extends Number, E extends Measurable<V, E, T>, T extends BaseUnit<T>> extends Comparable<E> {

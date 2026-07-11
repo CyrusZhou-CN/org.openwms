@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import java.lang.annotation.Target;
 import java.util.EventObject;
 
 /**
- * A FireAfterTransaction. is used to send a list of events synchronously after the current transaction has finished successfully.
+ * A FireAfterTransaction is used to send a list of events synchronously after the current transaction has finished successfully.
  *
  * @author Heiko Scherrer
  */
@@ -33,7 +33,9 @@ import java.util.EventObject;
 public @interface FireAfterTransaction {
 
     /**
-     * @return An array of events that shall be fired after the methods completes.
+     * The event types to instantiate and fire after the transaction completes successfully.
+     *
+     * @return An array of events that shall be fired after the method completes
      */
     Class<? extends EventObject>[] events() default {};
 }

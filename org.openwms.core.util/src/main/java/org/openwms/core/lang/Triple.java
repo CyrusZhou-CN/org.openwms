@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,14 @@ package org.openwms.core.lang;
 import java.util.Objects;
 
 /**
- * A Triple.
+ * A Triple is an immutable tuple of three elements: a {@code key} that names the entry, a {@code value} and the value's {@code type}.
  *
+ * @param key The key that identifies the entry
+ * @param value The actual value of the entry
+ * @param type The type of the value
+ * @param <K> Type of the key
+ * @param <V> Type of the value
+ * @param <T> Type of the value's type descriptor
  * @author Heiko Scherrer
  */
 public record Triple<K, V, T>(K key, V value, T type) {
@@ -37,6 +43,6 @@ public record Triple<K, V, T>(K key, V value, T type) {
         if (Objects.equals(this.type.getClass().getComponentType(), clazz.getComponentType())) {
             return (U) value;
         }
-        throw new ClassCastException("Cannot case requested type [%s] from [%s]".formatted(clazz, type.getClass()));
+        throw new ClassCastException("Cannot cast requested type [%s] from [%s]".formatted(clazz, type.getClass()));
     }
 }

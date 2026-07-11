@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,11 +42,10 @@ public final class SecurityUtils {
         if (username == null || username.isEmpty()) {
             return new HttpHeaders();
         }
-        String auth = username + ":" + password;
-        byte[] encodedAuth = Base64.getEncoder().encode(auth.getBytes(StandardCharsets.UTF_8));
-        String authHeader = "Basic " + new String(encodedAuth);
+        var auth = username + ":" + password;
+        var authHeader = "Basic " + Base64.getEncoder().encodeToString(auth.getBytes(StandardCharsets.UTF_8));
 
-        HttpHeaders result =  new HttpHeaders();
+        var result = new HttpHeaders();
         result.add(HttpHeaders.AUTHORIZATION, authHeader);
         return result;
     }

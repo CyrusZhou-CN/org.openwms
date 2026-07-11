@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import static org.openwms.core.time.TimeProvider.DATE_FORMAT;
 import static org.openwms.core.time.TimeProvider.DATE_TIME_MILLIS_FORMAT;
 
 /**
- * A JSONConfiguration.
+ * A JSONConfiguration customizes the Jackson JSON mapping with the date and date-time formats used across all OpenWMS.org services.
  *
  * @author Heiko Scherrer
  */
@@ -41,10 +41,16 @@ import static org.openwms.core.time.TimeProvider.DATE_TIME_MILLIS_FORMAT;
 @Configuration
 public class JSONConfiguration {
 
+    /**
+     * Customize the Jackson {@code JsonMapper} to serialize and deserialize {@code LocalDate} and {@code LocalDateTime} types with the
+     * formats defined in {@link org.openwms.core.time.TimeProvider}.
+     *
+     * @return The customizer instance applied by Spring Boot's Jackson auto-configuration
+     */
     @Bean
     public JsonMapperBuilderCustomizer jsonCustomizer() {
         return builder -> {
-            SimpleModule module = new SimpleModule();
+            var module = new SimpleModule();
             module.addSerializer(LocalDate.class, new LocalDateSerializer(DateTimeFormatter.ofPattern(DATE_FORMAT)));
             module.addSerializer(LocalDateTime.class, new LocalDateTimeSerializer(DateTimeFormatter.ofPattern(DATE_TIME_MILLIS_FORMAT)));
             module.addDeserializer(LocalDate.class, new LocalDateDeserializer(DateTimeFormatter.ofPattern(DATE_FORMAT)));

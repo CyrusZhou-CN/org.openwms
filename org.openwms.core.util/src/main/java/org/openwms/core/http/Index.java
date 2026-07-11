@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,17 @@ import org.ameba.http.AbstractBase;
 import org.springframework.hateoas.Link;
 
 /**
- * A Index encapsulates HAL links to point to exposed REST resources.
+ * An Index encapsulates HAL links to point to exposed REST resources.
  *
  * @author Heiko Scherrer
  */
 public class Index extends AbstractBase<Index> {
 
+    /**
+     * Constructor.
+     *
+     * @param links The HAL links to the resources this index points to
+     */
     public Index(Link... links) {
         this.add(links);
     }

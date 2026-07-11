@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,11 +26,9 @@ import org.springframework.context.ApplicationEvent;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Component;
 
-import java.util.EventObject;
-
 /**
- * An UserChangedEventAspect fires events after a method invocation completes.
- * It's main purpose is to fire events after a transaction succeeds, thereby the
+ * A FireAfterTransactionAspect fires events after a method invocation completes.
+ * Its main purpose is to fire events after a transaction succeeds, thereby the
  * advice must be enabled around Spring's Transaction advice.
  * <p>
  * Use the {@link FireAfterTransaction} event and declare some type of events
@@ -59,6 +57,11 @@ public class FireAfterTransactionAspect {
     private static final Logger LOGGER = LoggerFactory.getLogger(FireAfterTransactionAspect.class);
     private final ApplicationContext ctx;
 
+    /**
+     * Constructor.
+     *
+     * @param ctx The Spring ApplicationContext used to publish events
+     */
     public FireAfterTransactionAspect(ApplicationContext ctx) {
         this.ctx = ctx;
     }
@@ -72,8 +75,7 @@ public class FireAfterTransactionAspect {
      */
     public void fireEvent(Object publisher, FireAfterTransaction events) {
         try {
-            for (int i = 0; i < events.events().length; i++) {
-                Class<? extends EventObject> event = events.events()[i];
+            for (var event : events.events()) {
                 if (ApplicationEvent.class.isAssignableFrom(event)) {
                     ctx.publishEvent((ApplicationEvent) event.getConstructor(Object.class).newInstance(publisher));
                 }
@@ -93,8 +95,7 @@ public class FireAfterTransactionAspect {
     @Async
     public void fireEventAsync(Object publisher, FireAfterTransactionAsynchronous events) {
         try {
-            for (int i = 0; i < events.events().length; i++) {
-                Class<? extends EventObject> event = events.events()[i];
+            for (var event : events.events()) {
                 if (RootApplicationEvent.class.isAssignableFrom(event)) {
                     LOGGER.debug("Sending event: [{}]", event);
                     ctx.publishEvent((RootApplicationEvent) event.getConstructor(Object.class).newInstance(publisher));

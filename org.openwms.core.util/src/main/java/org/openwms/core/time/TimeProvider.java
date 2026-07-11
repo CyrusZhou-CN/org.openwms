@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 package org.openwms.core.time;
 
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -24,7 +23,7 @@ import java.util.Date;
 
 /**
  * A TimeProvider defines several widely used time formats as constants and provides the current time. An implementation may be loaded using
- * the Java1.6 ServiceLoader facility or by Spring dependency injection.
+ * the Java {@link java.util.ServiceLoader} facility or by Spring dependency injection.
  *
  * @author Heiko Scherrer
  */
@@ -47,7 +46,7 @@ public interface TimeProvider {
      * @return Timezone aware Date
      */
     default Date nowAsCurrentDate() {
-        return Date.from(ZonedDateTime.of(LocalDateTime.now(ZoneId.systemDefault()), ZoneId.systemDefault()).toInstant());
+        return Date.from(nowAsCurrentInstant());
     }
 
     /**
@@ -56,7 +55,7 @@ public interface TimeProvider {
      * @return UTC Date
      */
     default Date nowAsZuluDate() {
-        return Date.from(ZonedDateTime.now(ZoneId.of("Z")).toInstant());
+        return Date.from(nowAsZuluInstant());
     }
 
     /**
@@ -93,7 +92,7 @@ public interface TimeProvider {
      * @return Timezone aware Instant
      */
     default Instant nowAsCurrentInstant() {
-        return ZonedDateTime.of(LocalDateTime.now(ZoneId.systemDefault()), ZoneId.systemDefault()).toInstant();
+        return Instant.now();
     }
 
     /**
@@ -102,6 +101,6 @@ public interface TimeProvider {
      * @return Timezone aware Instant
      */
     default Instant nowAsZuluInstant() {
-        return ZonedDateTime.of(LocalDateTime.now(ZoneOffset.UTC), ZoneOffset.UTC).toInstant();
+        return Instant.now();
     }
 }

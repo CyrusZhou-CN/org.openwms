@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,17 @@
 package org.openwms.core.http;
 
 import org.junit.jupiter.api.Test;
+import org.springframework.context.support.StaticMessageSource;
 import org.springframework.mock.web.MockHttpServletRequest;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * A AbstractWebControllerTest.
+ * A WebControllerTest.
  *
  * @author Heiko Scherrer
  */
-class AbstractWebControllerTest {
+class WebControllerTest {
 
     @Test
     void test_Location_header_without_forwarded() {
@@ -34,8 +35,8 @@ class AbstractWebControllerTest {
         request.setServerName("172.19.0.4");
         request.setRequestURI("/v1/rest");
 
-        var testee = new AbstractWebController(){};
-        assertThat(testee.getLocationURIForCreatedResource(request, "4711").toASCIIString()).isEqualTo("http://172.19.0.4:80/v1/rest/4711/");
+        var testee = new AbstractWebController(new StaticMessageSource()){};
+        assertThat(testee.getLocationURIForCreatedResource(request, "4711").toASCIIString()).isEqualTo("http://172.19.0.4:80/v1/rest/4711");
     }
 
     @Test
@@ -50,7 +51,7 @@ class AbstractWebControllerTest {
         request.addHeader("x-forwarded-port", "8086");
         request.addHeader("x-forwarded-host", "hostname.local:8086");
 
-        var testee = new AbstractWebController(){};
-        assertThat(testee.getLocationURIForCreatedResource(request, "4711").toASCIIString()).isEqualTo("http://hostname.local:8086/common/v1/rest/4711/");
+        var testee = new AbstractWebController(new StaticMessageSource()){};
+        assertThat(testee.getLocationURIForCreatedResource(request, "4711").toASCIIString()).isEqualTo("http://hostname.local:8086/common/v1/rest/4711");
     }
 }

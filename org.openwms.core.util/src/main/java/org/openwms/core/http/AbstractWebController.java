@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,9 @@ import java.net.URI;
 import java.util.Locale;
 
 /**
- * A AbstractWebController.
+ * An AbstractWebController is the common base class for all REST controllers in OpenWMS.org services. It maps the well-known exception
+ * types onto appropriate HTTP responses with translated messages, and offers factory methods to build {@code ResponseEntity} instances
+ * and {@code Location} URIs for created resources - also behind proxies, by respecting the {@code x-forwarded-*} headers.
  *
  * @author Heiko Scherrer
  */
@@ -49,12 +51,23 @@ public abstract class AbstractWebController {
 
     private static final Logger EXC_LOGGER = LoggerFactory.getLogger(LoggingCategories.PRESENTATION_LAYER_EXCEPTION);
     private static final String P_PRESENTATION_LAYER_EXCEPTION = "[P] Presentation Layer Exception: {}";
-    private MessageSource messageSource;
+    private final MessageSource messageSource;
 
+    /**
+     * Constructor.
+     *
+     * @param messageSource The Spring MessageSource used to translate message keys into message texts
+     */
     protected AbstractWebController(MessageSource messageSource) {
         this.messageSource = messageSource;
     }
 
+    /**
+     * Map a {@link BehaviorAwareException} onto a response with the HTTP status the exception carries.
+     *
+     * @param bae The exception to map
+     * @return A ResponseEntity with the exception's status, message, message key and data
+     */
     @ExceptionHandler(BehaviorAwareException.class)
     protected ResponseEntity<Response<?>> handleBehaviorAwareException(BehaviorAwareException bae) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, bae.getLocalizedMessage(), bae);
@@ -68,6 +81,12 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Map a {@link RemovalNotAllowedException} onto a response with HTTP status {@code 403 FORBIDDEN}.
+     *
+     * @param rnae The exception to map
+     * @return A ResponseEntity with status {@code 403 FORBIDDEN}
+     */
     @ExceptionHandler(RemovalNotAllowedException.class)
     protected ResponseEntity<Response<?>> handleRemovalNotAllowedException(RemovalNotAllowedException rnae) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, rnae.getLocalizedMessage(), rnae);
@@ -80,6 +99,13 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Map a {@link BusinessRuntimeException} onto a response with the HTTP status taken from the exception's {@code ResponseStatus}
+     * annotation, or {@code 500 INTERNAL_SERVER_ERROR} if the exception class is not annotated.
+     *
+     * @param bre The exception to map
+     * @return A ResponseEntity with the resolved status, message, message key and data
+     */
     @ExceptionHandler(BusinessRuntimeException.class)
     protected ResponseEntity<Response<?>> handleBusinessRuntimeException(BusinessRuntimeException bre) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, bre.getLocalizedMessage(), bre);
@@ -95,6 +121,12 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Map a {@link HttpBusinessException} onto a response with the HTTP status the exception carries.
+     *
+     * @param hbe The exception to map
+     * @return A ResponseEntity with the exception's status and message
+     */
     @ExceptionHandler(HttpBusinessException.class)
     protected ResponseEntity<Response<?>> handleHttpBusinessException(HttpBusinessException hbe) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, hbe.getLocalizedMessage(), hbe);
@@ -106,28 +138,39 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Map a {@link TechnicalRuntimeException} onto a response. If the exception's cause is one of the known business exception types the
+     * mapping is delegated to the corresponding handler method, otherwise the response has HTTP status {@code 502 BAD_GATEWAY}.
+     *
+     * @param tre The exception to map
+     * @return A ResponseEntity with the resolved status, message, message key and data
+     */
     @ExceptionHandler(TechnicalRuntimeException.class)
     protected ResponseEntity<Response<?>> handleTechnicalRuntimeException(TechnicalRuntimeException tre) {
-        if (tre.getCause() instanceof BehaviorAwareException bae) {
-            return handleBehaviorAwareException(bae);
-        }
-        if (tre.getCause() instanceof BusinessRuntimeException bre) {
-            return handleBusinessRuntimeException(bre);
-        }
-        if (tre.getCause() instanceof HttpBusinessException hbe) {
-            return handleHttpBusinessException(hbe);
-        }
-        EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, tre.getLocalizedMessage(), tre);
-        return new ResponseEntity<>(Response.newBuilder()
-                .withMessage(tre.getMessage())
-                .withMessageKey(tre.getMessageKey())
-                .withHttpStatus(String.valueOf(HttpStatus.BAD_GATEWAY.value()))
-                .withObj(tre.getData())
-                .build(),
-                HttpStatus.BAD_GATEWAY
-        );
+        return switch (tre.getCause()) {
+            case BehaviorAwareException bae -> handleBehaviorAwareException(bae);
+            case BusinessRuntimeException bre -> handleBusinessRuntimeException(bre);
+            case HttpBusinessException hbe -> handleHttpBusinessException(hbe);
+            case null, default -> {
+                EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, tre.getLocalizedMessage(), tre);
+                yield new ResponseEntity<>(Response.newBuilder()
+                        .withMessage(tre.getMessage())
+                        .withMessageKey(tre.getMessageKey())
+                        .withHttpStatus(String.valueOf(HttpStatus.BAD_GATEWAY.value()))
+                        .withObj(tre.getData())
+                        .build(),
+                        HttpStatus.BAD_GATEWAY
+                );
+            }
+        };
     }
 
+    /**
+     * Map an {@link IllegalArgumentException} onto a response with HTTP status {@code 400 BAD_REQUEST}.
+     *
+     * @param ex The exception to map
+     * @return A ResponseEntity with status {@code 400 BAD_REQUEST}
+     */
     @ExceptionHandler({IllegalArgumentException.class})
     public ResponseEntity<Response<?>> illegalArgumentException(IllegalArgumentException ex) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, ex.getLocalizedMessage(), ex);
@@ -141,6 +184,12 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Map validation exceptions onto a response with HTTP status {@code 400 BAD_REQUEST} and a translated validation error message.
+     *
+     * @param e The exception to map
+     * @return A ResponseEntity with status {@code 400 BAD_REQUEST}
+     */
     @ExceptionHandler({MethodArgumentNotValidException.class, ValidationException.class})
     protected ResponseEntity<Response<?>> handleValidationException(Exception e) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, e.getLocalizedMessage(), e);
@@ -154,6 +203,13 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Map a {@link ConstraintViolationException} onto a response with HTTP status {@code 400 BAD_REQUEST} and a translated validation
+     * error message that contains the violated property paths.
+     *
+     * @param ex The exception to map
+     * @return A ResponseEntity with status {@code 400 BAD_REQUEST}
+     */
     @ExceptionHandler(ConstraintViolationException.class)
     protected ResponseEntity<Response<?>> handleConstraintViolationException(ConstraintViolationException ex) {
         var properties = ex.getConstraintViolations().stream().map(c -> c.getPropertyPath().toString()).toList();
@@ -168,6 +224,12 @@ public abstract class AbstractWebController {
         );
     }
 
+    /**
+     * Fallback handler that maps any other {@link Exception} onto a response with HTTP status {@code 500 INTERNAL_SERVER_ERROR}.
+     *
+     * @param ex The exception to map
+     * @return A ResponseEntity with status {@code 500 INTERNAL_SERVER_ERROR}
+     */
     @ExceptionHandler(Exception.class)
     protected ResponseEntity<Response<?>> handleException(Exception ex) {
         EXC_LOGGER.error(P_PRESENTATION_LAYER_EXCEPTION, ex.getLocalizedMessage(), ex);
@@ -181,11 +243,11 @@ public abstract class AbstractWebController {
     }
 
     /**
-     * Get the messageSource.
+     * Translate the given message {@code key} into a message text using the configured {@code MessageSource} and the default locale.
      *
      * @param key The error code to search message text for
      * @param objects Any arguments that are passed into the message text
-     * @return the messageSource.
+     * @return The translated message text
      */
     protected String translate(String key, Object... objects) {
         return messageSource.getMessage(key, objects, Locale.getDefault());

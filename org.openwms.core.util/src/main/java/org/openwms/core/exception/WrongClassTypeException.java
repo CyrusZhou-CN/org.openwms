@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,14 +16,14 @@
 package org.openwms.core.exception;
 
 /**
- * A WrongClassTypeException.
+ * A WrongClassTypeException is thrown when an object is not of the expected class type.
  *
  * @author Heiko Scherrer
  */
 public class WrongClassTypeException extends RuntimeException {
 
     /**
-     * Create a new WrongClassTypeException with a message text.
+     * Create a new WrongClassTypeException.
      */
     public WrongClassTypeException() {
         super();

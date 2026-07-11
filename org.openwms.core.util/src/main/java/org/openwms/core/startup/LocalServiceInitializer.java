@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ import org.springframework.context.event.ContextRefreshedEvent;
 import org.springframework.stereotype.Component;
 
 /**
- * A LocalServiceInitializer raises {@link MergePropertiesEvent}s whenever the OpenWMS
- * OSGi bundle is started or restarted.
+ * A LocalServiceInitializer raises a {@link MergePropertiesEvent} whenever the Spring
+ * ApplicationContext is started or refreshed.
  *
  * @author Heiko Scherrer
  */
@@ -35,6 +35,11 @@ public class LocalServiceInitializer implements ApplicationListener<ContextRefre
     private static final Logger LOGGER = LoggerFactory.getLogger(LocalServiceInitializer.class);
     private final ApplicationContext ctx;
 
+    /**
+     * Constructor.
+     *
+     * @param ctx The Spring ApplicationContext used to publish events
+     */
     public LocalServiceInitializer(ApplicationContext ctx) {
         this.ctx = ctx;
     }

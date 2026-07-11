@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.openwms.core.exception;
 import org.ameba.exception.IntegrationLayerException;
 
 import java.io.Serializable;
-
-import static java.lang.String.format;
 
 /**
  * A DataNotFoundException is thrown to indicate that data was expected but nothing was
@@ -55,6 +53,6 @@ public class DataNotFoundException extends IntegrationLayerException {
      * @param id Id of the expected entity
      */
     public DataNotFoundException(Serializable id) {
-        super(format("Entity class not found in persistence layer, id=[%s]",id));
+        super("Entity class not found in persistence layer, id=[%s]".formatted(id));
     }
 }

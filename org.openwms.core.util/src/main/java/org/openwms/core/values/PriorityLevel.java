@@ -1,5 +1,5 @@
 /*
- * Copyright 2005-2025 the original author or authors.
+ * Copyright 2005-2026 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,6 @@
  */
 package org.openwms.core.values;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
 /**
@@ -23,7 +22,7 @@ import java.util.Arrays;
  * 
  * @author Heiko Scherrer
  */
-public enum PriorityLevel implements Serializable {
+public enum PriorityLevel {
 
     /** Lowest priority. */
     LOWEST(10),
@@ -40,11 +39,7 @@ public enum PriorityLevel implements Serializable {
     /** Highest priority. */
     HIGHEST(50);
 
-    private int order;
-
-    /** Framework constructor.*/
-    PriorityLevel() {
-    }
+    private final int order;
 
     /**
      * Return the {@code PriorityLevel} of the given {@code priority}.
@@ -57,7 +52,7 @@ public enum PriorityLevel implements Serializable {
         return Arrays.stream(PriorityLevel.values())
                 .filter(p -> p.name().equals(priority))
                 .findFirst()
-                .orElseThrow(() -> new IllegalArgumentException(String.format("A priority level of %s is not defined", priority)));
+                .orElseThrow(() -> new IllegalArgumentException("A priority level of %s is not defined".formatted(priority)));
     }
 
     /**
