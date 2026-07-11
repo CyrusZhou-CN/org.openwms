@@ -4,7 +4,7 @@
     <parent>
         <groupId>org.openwms</groupId>
         <artifactId>org.openwms</artifactId>
-        <version>3.1.0</version>
+        <version>4.0.0-SNAPSHOT</version>
     </parent>
     <artifactId>org.openwms.core.util</artifactId>
     <name>OpenWMS.org CORE: Utilities Library</name>
@@ -43,6 +43,11 @@
             <optional>true</optional>
         </dependency>
 
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+            <optional>true</optional>
+        </dependency>
         <dependency>
             <groupId>io.interface21</groupId>
             <artifactId>ameba-lib</artifactId>
